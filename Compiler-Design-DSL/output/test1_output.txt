@@ -1,0 +1,175 @@
+============================================================
+  Simple Imperative DSL Compiler
+  Modules: Lex → Parse → AST → Semantic → ICG (TAC)
+============================================================
+
+[LEXER]    Tokenizing 'test/test1.dsl'...
+[PARSER]   Parsing source...
+[PARSER]   Parse successful.
+
+[AST]      Abstract Syntax Tree:
+─────────────────────────────────────────────────────────
+[PROGRAM]
+  [DECL_INT: x]
+  [DECL_INT: y]
+  [DECL_INT: result]
+  [DECL_BOOL: flag]
+  [ASSIGN]
+    [ID: x]
+    [NUM: 10]
+  [ASSIGN]
+    [ID: y]
+    [NUM: 3]
+  [ASSIGN]
+    [ID: flag]
+    [BOOL: true]
+  [ASSIGN]
+    [ID: result]
+    [ADD]
+      [ID: x]
+      [MUL]
+        [ID: y]
+        [NUM: 2]
+  [PRINT]
+    [ID: result]
+  [IF]
+    [GT]
+      [ID: x]
+      [ID: y]
+    [ASSIGN]
+      [ID: result]
+      [SUB]
+        [ID: x]
+        [ID: y]
+    [PRINT]
+      [ID: result]
+    [ASSIGN]
+      [ID: result]
+      [SUB]
+        [ID: y]
+        [ID: x]
+    [PRINT]
+      [ID: result]
+  [DECL_INT: counter]
+  [ASSIGN]
+    [ID: counter]
+    [NUM: 0]
+  [WHILE]
+    [LT]
+      [ID: counter]
+      [NUM: 5]
+    [PRINT]
+      [ID: counter]
+    [ASSIGN]
+      [ID: counter]
+      [ADD]
+        [ID: counter]
+        [NUM: 1]
+  [IF]
+    [ID: flag]
+    [IF]
+      [GEQ]
+        [ID: x]
+        [NUM: 10]
+      [PRINT]
+        [ID: x]
+  [DECL_BOOL: check]
+  [ASSIGN]
+    [ID: check]
+    [AND]
+      [GT]
+        [ID: x]
+        [NUM: 5]
+      [LT]
+        [ID: y]
+        [NUM: 10]
+  [IF]
+    [ID: check]
+    [PRINT]
+      [ID: x]
+  [PRINT]
+    [STR: "Hello from DSL!"]
+─────────────────────────────────────────────────────────
+
+[SEMANTIC] Running semantic analysis...
+[SEMANTIC] Analysis passed with 0 errors.
+
+  ┌────────────────────────────────────┐
+  │        SYMBOL TABLE DUMP           │
+  ├──────────────┬────────┬────────────┤
+  │ Name         │ Type   │ Decl Line  │
+  ├──────────────┼────────┼────────────┤
+  │ y            │ int    │ 6          │
+  │ x            │ int    │ 5          │
+  │ flag         │ bool   │ 8          │
+  │ result       │ int    │ 7          │
+  └──────────────┴────────┴────────────┘
+
+[CODEGEN]  Generating Three-Address Code (TAC)...
+
+  ┌─────────────────────────────────────────────────────┐
+  │          THREE-ADDRESS CODE (TAC) OUTPUT             │
+  ├──────┬────────────┬──────────────┬──────────────────┤
+  │ No.  │ Operator   │ Arg1 / Arg2  │ Result           │
+  ├──────┼────────────┼──────────────┼──────────────────┤
+  │ 0    │ DECL_INT   │ x            │                  │
+  │ 1    │ DECL_INT   │ y            │                  │
+  │ 2    │ DECL_INT   │ result       │                  │
+  │ 3    │ DECL_BOOL  │ flag         │                  │
+  │ 4    │ =          │ 10           │ t0               │
+  │ 5    │ =          │ t0           │ x                │
+  │ 6    │ =          │ 3            │ t1               │
+  │ 7    │ =          │ t1           │ y                │
+  │ 8    │ =          │ true         │ t2               │
+  │ 9    │ =          │ t2           │ flag             │
+  │ 10   │ =          │ 2            │ t3               │
+  │ 11   │ *          │ y, t3        │ t4               │
+  │ 12   │ +          │ x, t4        │ t5               │
+  │ 13   │ =          │ t5           │ result           │
+  │ 14   │ PRINT      │ result       │                  │
+  │ 15   │ >          │ x, y         │ t6               │
+  │ 16   │ IF_FALSE   │ t6, L0       │                  │
+  │ 17   │ -          │ x, y         │ t7               │
+  │ 18   │ =          │ t7           │ result           │
+  │ 19   │ GOTO       │ L1           │                  │
+  │ 20   │ LABEL      │ L0           │                  │
+  │ 21   │ -          │ y, x         │ t8               │
+  │ 22   │ =          │ t8           │ result           │
+  │ 23   │ LABEL      │ L1           │                  │
+  │ 24   │ DECL_INT   │ counter      │                  │
+  │ 25   │ =          │ 0            │ t9               │
+  │ 26   │ =          │ t9           │ counter          │
+  │ 27   │ LABEL      │ L2           │                  │
+  │ 28   │ =          │ 5            │ t10              │
+  │ 29   │ <          │ counter, t10 │ t11              │
+  │ 30   │ IF_FALSE   │ t11, L3      │                  │
+  │ 31   │ PRINT      │ counter      │                  │
+  │ 32   │ GOTO       │ L2           │                  │
+  │ 33   │ LABEL      │ L3           │                  │
+  │ 34   │ IF_FALSE   │ flag, L4     │                  │
+  │ 35   │ =          │ 10           │ t12              │
+  │ 36   │ >=         │ x, t12       │ t13              │
+  │ 37   │ IF_FALSE   │ t13, L6      │                  │
+  │ 38   │ PRINT      │ x            │                  │
+  │ 39   │ LABEL      │ L6           │                  │
+  │ 40   │ LABEL      │ L4           │                  │
+  │ 41   │ DECL_BOOL  │ check        │                  │
+  │ 42   │ =          │ 5            │ t14              │
+  │ 43   │ >          │ x, t14       │ t15              │
+  │ 44   │ =          │ 10           │ t16              │
+  │ 45   │ <          │ y, t16       │ t17              │
+  │ 46   │ &&         │ t15, t17     │ t18              │
+  │ 47   │ =          │ t18          │ check            │
+  │ 48   │ IF_FALSE   │ check, L8    │                  │
+  │ 49   │ PRINT      │ x            │                  │
+  │ 50   │ LABEL      │ L8           │                  │
+  │ 51   │ =          │ "Hello from DSL!" │ t19              │
+  │ 52   │ PRINT      │ t19          │                  │
+  └──────┴────────────┴──────────────┴──────────────────┘
+  Total instructions: 53
+
+[CODEGEN]  TAC written to output/tac_output.txt
+
+[COMPILER] Compilation successful!
+============================================================
+
