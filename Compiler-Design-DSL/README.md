@@ -1,5 +1,5 @@
 # Simple Imperative DSL Compiler
-### Compiler Design Assignment — `Compiler-Design-DSL_RegNo_Name`
+### Compiler Design Assignment — `Compiler-Design-DSL_RA2311026050027_Karthik K S`
 
 ---
 
@@ -225,9 +225,9 @@ Recursive tree-walk emitting Three-Address Code (TAC). Uses fresh temporaries (t
 
 | Name | Reg No | Role |
 |------|--------|------|
-| *(Your Name)* | *(Your Reg No)* | All modules |
+| *Karthik.K.S* | *RA2311026050027* | All modules |
 
 **Institution:** SRM Institute of Science and Technology, Tiruchirappalli  
 **Department:** Artificial Intelligence & Machine Learning  
 **Subject:** Compiler Design  
-**Academic Year:** 2025–2026
+**Academic Year:** 2023–2027
